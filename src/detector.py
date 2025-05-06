@@ -32,7 +32,7 @@ class Circle:
         }
 
 
-# Basic CIGAR operations
+# Basic CIGAR operations for my sake
 # M --> 0 (match)
 # I --> 1 (insertion)
 # D --> 2 (deletion)
@@ -58,8 +58,9 @@ def softclips(bam_path: str, min_clip: int = 10):
             cigar = read.cigartuples or []
 
             # Check if soft clipping at start or end is >= min_clip
+            # Mark left or right of read
             if cigar and cigar[0][0] == 4 and cigar[0][1] >= min_clip:
-                tags.append(Tag(read.reference_name, read.reference_start, "left"))
+                tags.append(Tag(read.reference_name, read.reference_start, "left")) 
             if cigar and cigar[-1][0] == 4 and cigar[-1][1] >= min_clip:
                 tags.append(Tag(read.reference_name, read.reference_end, "right"))
     
@@ -67,14 +68,20 @@ def softclips(bam_path: str, min_clip: int = 10):
 
 # Circle caller
 def call_circles(bam_path: str, window: int = 10, min_support: int = 3, min_score: float = 2.0):
+    # Create dictionary bins
     left_bins = defaultdict(list)
     right_bins = defaultdict(list)
+    
+    # Fetch tags
+    tags =  softclips(bam_path)
 
-    for t in softclips(bam_path):
-        key = (t.chrom, t.pos // window)
-        (left_bins if t.direction == "left" else right_bins)[key].append(t)
+    for t in tags:
+        key = (t.chrom, t.pos // window) 
+        (left_bins if t.direction == "left" else right_bins)[key].append(t) # append tuple to it's respective left or right bin
 
+    # Array of circles
     circles = []
+    
     for key, ltags in left_bins.items():
         rtags = right_bins.get(key)
         if not rtags:
@@ -94,14 +101,16 @@ def call_circles(bam_path: str, window: int = 10, min_support: int = 3, min_scor
             continue
 
         score = support / (rpos - lpos + 1)
+
         if score < min_score:
             continue
-
+        
+        # Store circles
         circles.append(Circle(key[0], lpos, rpos, support, round(score, 3)))
 
     return circles
 
 
 # Save to csv
-def to_csv(circles, outfile="visuals/circles.csv"):
+def to_csv(circles, outfile="csvs/circles.csv"):
     pd.DataFrame([c.to_dict() for c in circles]).to_csv(outfile, index=False)

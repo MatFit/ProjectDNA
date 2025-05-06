@@ -2,13 +2,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 
-
 def compute_confidence(row):
-    return row['support'] * row['score']  # You can modify this metric
+    return row['support'] * row['score']
 
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("csv", help="Input BAM")
+    p.add_argument("-o", "--out", default="visuals/circle_confidence.png", help="Output CSV")
     args = p.parse_args()
 
     # Load CSV
@@ -25,7 +25,7 @@ def main():
     plt.ylabel("Confidence Score")
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig('visuals/circle_confidence.png')
+    plt.savefig(args.out)
     
 
 if __name__ == '__main__':

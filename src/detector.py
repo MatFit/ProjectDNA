@@ -87,7 +87,8 @@ def call_circles(bam_path: str, window: int = 10, min_support: int = 3, min_scor
         if not rtags:
             continue
 
-        support = len(ltags) + len(rtags)
+        support = len(ltags) + len(rtags) # length of tags
+
         if support < min_support:
             continue
 
@@ -100,7 +101,7 @@ def call_circles(bam_path: str, window: int = 10, min_support: int = 3, min_scor
         if rpos <= lpos:        # sanity
             continue
 
-        score = support / (rpos - lpos + 1)
+        score = support / (rpos - lpos + 1) # The further l and r are, the less of a score
 
         if score < min_score:
             continue

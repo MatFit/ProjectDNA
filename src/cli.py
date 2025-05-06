@@ -7,7 +7,7 @@ def main():
     # Parser
     p = argparse.ArgumentParser()
     p.add_argument("bam", help="Input BAM")
-    p.add_argument("-o", "--out", default="visuals/circles.csv", help="Output CSV")
+    p.add_argument("-o", "--out", default="csvs/circles.csv", help="Output CSV")
     p.add_argument("--min-score", type=float, default=2.0, help="Minimum circle score")
     args = p.parse_args()
 

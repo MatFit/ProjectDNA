@@ -84,6 +84,7 @@ def call_circles(bam_path: str, window: int = 10, min_support: int = 3, min_scor
     
     for key, ltags in left_bins.items():
         rtags = right_bins.get(key)
+        
         if not rtags:
             continue
 
